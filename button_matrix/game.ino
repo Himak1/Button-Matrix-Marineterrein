@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-// Routines for the 3 DEMO/TEST "games"
+// Routines for the 3 game_state/TEST "games"
 /*
 	game() should not take too much time or it will make shift
 	register polling too slow. Lengthy processes should be
@@ -22,7 +22,7 @@
 	emptyQueue() to empty the queue
 */
 
-const int DEMO = 2; // Which DEMO/TEST game? 0 = running one, 1 = full on/off, 2 = tile toggle
+const int game_state = 2; // Which game_state/TEST game? 0 = running one, 1 = full on/off, 2 = tile toggle
 
 /*
    Globals for the game.
@@ -36,7 +36,7 @@ bool on_or_off = true;
 */
 void gameSetup() {
   Serial.println("Game setup!");
-  if (DEMO == 0)
+  if (game_state == 0)
 	led_on_off(0, true);
 }
 
@@ -59,12 +59,12 @@ int game(int state, bool inputPending) {
 	  break;
 
 	case 1:       // this step moves the leds one position
-	  if (DEMO == 0) {
+	  if (game_state == 0) {
 		led_0 = led_state(0);
 		for (int i = 0; i < N_PANELS - 1; i++ )
 		  led_on_off(i, led_state(i + 1));
 		led_on_off(N_PANELS - 1, led_0);
-	  } else if (DEMO == 1) {
+	  } else if (game_state == 1) {
 		led_on_off(led_now, on_or_off);
 		led_now ++;
 		if (led_now >= N_PANELS) {
@@ -79,7 +79,7 @@ int game(int state, bool inputPending) {
 	  if (hasInput())  {          // Should always be true, just in case input has been stolen..
 		int pressed = getInput();
 
-		if (DEMO == 2) {
+		if (game_state == 2) {
 		  led_on_off(pressed, ! led_state(pressed));
 		}
 	  } else
