@@ -22,70 +22,91 @@
 	emptyQueue() to empty the queue
 */
 
-const int game_state = 2; // Which game_state/TEST game? 0 = running one, 1 = full on/off, 2 = tile toggle
-
-/*
-   Globals for the game.
-*/
-int delayed = 0;
-int led_now = 0;
-bool on_or_off = true;
+const int game_state = 1; // Which game_state/TEST game? 0 = running one, 1 = full on/off, 2 = tile toggle
 
 /*
    One time set-up and initialisation of the game.
 */
 void gameSetup() {
-  Serial.println("Game setup!");
-  if (game_state == 0)
-	led_on_off(0, true);
+	Serial.println("Game setup!");
+	if (game_state == 0)
+		led_on_off(0, true);
 }
 
 /*
+   Globals for the game.
+*/
+int delayed = 0;
+int	led_now = 0;
+bool on_or_off = true;
+bool blank_panel = true;
+
+inline void	wipe_leds()
+{
+	for (int i = 0; i < N_PANELS; i++)
+		led_on_off(i, false);
+	blank_panel = true;
+}
+/*
    Game execution.
 */
-int game(int state, bool inputPending) {
+int game(int state, bool inputPending)
+{
+	const uint8_t DELAY_TIME = 120;
+	bool led_0;
 
-  const uint8_t DELAY_TIME = 120;
-  bool led_0;
+	switch ( state )
+	{
+		case 0:       // This step does partial 1 ms delays until done delaying.
+			delay(1);
+			delayed += 1;
+			if (delayed > DELAY_TIME)
+			{
+				delayed = 0;  // prime for next delay
+				return 1;  // Done delaying, move to next step.
+			}
+			break;
 
-  switch ( state ) {
-	case 0:       // This step does partial 1 ms delays until done delaying.
-	  delay(1);
-	  delayed += 1;
-	  if (delayed > DELAY_TIME) {
-		delayed = 0;  // prime for next delay
-		return 1;  // Done delaying, move to next step.
-	  }
-	  break;
+		case 1:       // this step moves the leds one position
+			if (game_state == 0)
+			{
+				if (blank_panel == false)
+					wipe_leds();
+				led_on_off(led_now, on_or_off);
+				led_now ++;
+				if (led_now >= N_PANELS)
+				{
+					wipe_leds();
+					game_state = 1;
+					blank_panel = false;
+				}
+			}
+			else if (game_state == 1)
+			{
+				led_on_off(11, ! led_state(11));
+				led_on_off(12, ! led_state(12));
+				led_on_off(19, ! led_state(19));
+				led_on_off(20, ! led_state(20));
+			}
+			if ( inputPending )
+				return 2;	// Go to this step to process input
+			break;	// We are going back to step 0 to delay once again.
+		case 2:	// this step processes the input
+			if (hasInput()) // Should always be true, just in case input has been stolen..
+			{
+				int pressed = getInput(); //
 
-	case 1:       // this step moves the leds one position
-	  if (game_state == 0) {
-		led_0 = led_state(0);
-		for (int i = 0; i < N_PANELS - 1; i++ )
-		  led_on_off(i, led_state(i + 1));
-		led_on_off(N_PANELS - 1, led_0);
-	  } else if (game_state == 1) {
-		led_on_off(led_now, on_or_off);
-		led_now ++;
-		if (led_now >= N_PANELS) {
-		  led_now = 0;
-		  on_or_off = ! on_or_off;
-		}
-	  }
-	  if ( inputPending ) return 2;   // Go to this step to process input
-	  break;      // We are going back to step 0 to delay once again.
-
-	case 2:       // this step processes the input
-	  if (hasInput())  {          // Should always be true, just in case input has been stolen..
-		int pressed = getInput();
-
-		if (game_state == 2) {
-		  led_on_off(pressed, ! led_state(pressed));
-		}
-	  } else
-		Serial.println("Input stolen!");
-	  break;      // We are going back to step 0 to delay once again.;
-  }
-
-  return 0;   // Default return is to state 0;
+				if (game_state == 1)
+				{
+					if (pressed == 11 || pressed == 12 || pressed == 19 || pressed == 20)
+					{
+						game_state = 0;
+					}
+				}
+			}
+			else
+				Serial.println("Input stolen!");//
+			break; // We are going back to step 0 to delay once again.;
+	}
+	return 0;   // Default return is to state 0;
 }
