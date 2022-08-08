@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include <ArduinoQueue.h>                 // Import the arduino Queue library.
-#include "game.ino"
 
 /*
 	 IO pin definitions for the interface boards.
