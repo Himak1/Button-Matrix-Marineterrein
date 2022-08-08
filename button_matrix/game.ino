@@ -22,8 +22,6 @@
 	emptyQueue() to empty the queue
 */
 
-//#include "button_matrix.h"
-
 const int DEMO = 2; // Which DEMO/TEST game? 0 = running one, 1 = full on/off, 2 = tile toggle
 
 /*
