@@ -22,7 +22,7 @@
 	emptyQueue() to empty the queue
 */
 
-const int game_state = 1; // Which game_state/TEST game? 0 = running one, 1 = full on/off, 2 = tile toggle
+int game_state = 0; // Which game_state/TEST game? 0 = running one, 1 = full on/off, 2 = tile toggle
 
 /*
    One time set-up and initialisation of the game.
@@ -33,6 +33,15 @@ void gameSetup() {
 		led_on_off(0, true);
 }
 
+typdef enum game_states
+{
+    STARTUP,
+    WAIT_INPUT,
+    ROUND_LOOP,
+    P1_TURN,
+    SHOW_SCORE
+};
+
 /*
    Globals for the game.
 */
@@ -40,6 +49,9 @@ int delayed = 0;
 int	led_now = 0;
 bool on_or_off = true;
 bool blank_panel = true;
+
+int target;
+int score = 0;
 
 inline void	wipe_leds()
 {
@@ -68,7 +80,7 @@ int game(int state, bool inputPending)
 			break;
 
 		case 1:       // this step moves the leds one position
-			if (game_state == 0)
+			if (game_state == STARTUP)
 			{
 				if (blank_panel == false)
 					wipe_leds();
@@ -76,18 +88,28 @@ int game(int state, bool inputPending)
 				led_now ++;
 				if (led_now >= N_PANELS)
 				{
+                    led_now = 0;
 					wipe_leds();
-					game_state = 1;
+					game_state = WAIT_INPUT;
 					blank_panel = false;
 				}
 			}
-			else if (game_state == 1)
+			else if (game_state == WAIT_INPUT)
 			{
 				led_on_off(11, ! led_state(11));
 				led_on_off(12, ! led_state(12));
 				led_on_off(19, ! led_state(19));
 				led_on_off(20, ! led_state(20));
 			}
+            else if (game_state == ROUND_LOOP)
+            {
+                target = random(0, 31);
+                game_state = P1_TURN;
+            }
+            else if (game_state == P1_TURN)
+            {
+                led_on_off(target, ! led_state(target));
+            }
 			if ( inputPending )
 				return 2;	// Go to this step to process input
 			break;	// We are going back to step 0 to delay once again.
@@ -96,13 +118,25 @@ int game(int state, bool inputPending)
 			{
 				int pressed = getInput(); //
 
-				if (game_state == 1)
+				if (game_state == WAIT_INPUT)
 				{
 					if (pressed == 11 || pressed == 12 || pressed == 19 || pressed == 20)
 					{
-						game_state = 0;
+						game_state = ROUND_LOOP;
 					}
 				}
+                else if (game_state == P1_TURN)
+                {
+                    if (pressed == target)
+                    {
+                        score++;
+                        game_state = SHOW_SCORE;
+                    }
+                    else
+                    {
+                        game_state = SHOW_SCORE;
+                    }
+                }
 			}
 			else
 				Serial.println("Input stolen!");//
