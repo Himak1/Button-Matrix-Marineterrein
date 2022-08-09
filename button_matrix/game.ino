@@ -29,7 +29,7 @@ typedef enum game_states
     P1_TARGET,
     P1_TURN,
     MISSED,
-	HIT,
+	  HIT,
     SHOW_SCORE
 };
 
@@ -100,6 +100,8 @@ int game(int state, bool inputPending)
 				p1_turn_output();
       else if (game_state == MISSED)
         missed_output();
+      else if (game_state == HIT)
+        hit_output();
 			else if (game_state == SHOW_SCORE)
 				show_score_output();
 			if ( inputPending )

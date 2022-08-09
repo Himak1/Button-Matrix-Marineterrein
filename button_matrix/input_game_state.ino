@@ -25,7 +25,7 @@ void    p1_turn_input(int pressed)
 	{
     Serial.println("yaay");
 		score++;
-		game_state = SHOW_SCORE;
+		game_state = HIT;
 		wipe_leds();
 	}
 	else
