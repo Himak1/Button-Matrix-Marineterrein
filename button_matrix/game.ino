@@ -6,7 +6,7 @@
 /*   By: jhille <jhille@student.codam.nl>             +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/08/08 13:17:49 by jhille        #+#    #+#                 */
-/*   Updated: 2022/08/09 13:48:22 by jhille        ########   odam.nl         */
+/*   Updated: 2022/08/09 15:16:25 by jhille        ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,9 @@ typdef enum game_states
 {
     STARTUP,
     WAIT_INPUT,
-    ROUND_LOOP,
+    P1_TARGET,
     P1_TURN,
+	MISSED,
     SHOW_SCORE
 };
 
@@ -49,6 +50,7 @@ int delayed = 0;
 int	led_now = 0;
 bool on_or_off = true;
 bool blank_panel = true;
+int	duration = 0;
 
 int target;
 int score = 0;
@@ -59,6 +61,13 @@ inline void	wipe_leds()
 		led_on_off(i, false);
 	blank_panel = true;
 }
+
+inline void	led_on_off_range(int min, int max)
+{
+	for (int i = min; i <= max; i++)
+		led_on_off(i, ! led_state(i));
+}
+
 /*
    Game execution.
 */
@@ -84,8 +93,8 @@ int game(int state, bool inputPending)
 				startup_output();
 			else if (game_state == WAIT_INPUT)
 				wait_input_output();
-            else if (game_state == ROUND_LOOP)
-				round_loop_output();
+            else if (game_state == P1_TARGET)
+				p1_target_output();
             else if (game_state == P1_TURN)
 				p1_turn_output();
 			else if (game_state == SHOW_SCORE)
