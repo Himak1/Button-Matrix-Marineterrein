@@ -6,7 +6,7 @@
 /*   By: jhille <jhille@student.codam.nl>             +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/08/08 13:17:49 by jhille        #+#    #+#                 */
-/*   Updated: 2022/08/09 15:16:25 by jhille        ########   odam.nl         */
+/*   Updated: 2022/08/09 17:51:00 by jhille        ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ typedef enum game_states
     P1_TARGET,
     P1_TURN,
     MISSED,
+	HIT,
     SHOW_SCORE
 };
 

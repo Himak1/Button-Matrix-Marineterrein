@@ -6,7 +6,7 @@
 /*   By: jhille <jhille@student.codam.nl>             +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/08/09 13:27:18 by jhille        #+#    #+#                 */
-/*   Updated: 2022/08/09 15:28:04 by jhille        ########   odam.nl         */
+/*   Updated: 2022/08/09 17:56:06 by jhille        ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,15 +35,6 @@ void	wait_input_output()
 
 void	p1_target_output()
 {
-	if (duration < 10)
-	{
-		led_on_off_range(4, 7);
-		led_on_off_range(12, 15);
-		led_on_off_range(20,23);
-		led_on_off_range(28, 31);
-		duration++;
-		return ;
-	}
 	target = random(0, 31);
   game_state = P1_TURN;
 	duration = 0;
@@ -82,11 +73,30 @@ void	missed_output()
 	}
 }
 
+void	hit_output()
+{
+	if (duration < 4)
+	{
+		led_on_off(13, ! led_state(13));
+		led_on_off(4, ! led_state(4));
+		led_on_off(11, ! led_state(11));
+		led_on_off(18, ! led_state(18));
+		led_on_off(25, ! led_state(25));
+		duration++;
+	}
+	else
+	{
+		duration = 0;
+		wipe_leds();
+		game_state = SHOW_SCORE;
+	}
+}
+
 void	show_score_output()
 {
 	if (score == 4)
   {
-    score = 0;
+	score = 0;
 		game_state = STARTUP;
   }
 	else
