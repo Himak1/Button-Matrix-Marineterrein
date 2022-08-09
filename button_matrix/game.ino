@@ -22,7 +22,17 @@
 	emptyQueue() to empty the queue
 */
 
-int game_state = 0; // Which game_state/TEST game? 0 = running one, 1 = full on/off, 2 = tile toggle
+typedef enum game_states
+{
+    STARTUP,
+    WAIT_INPUT,
+    P1_TARGET,
+    P1_TURN,
+    MISSED,
+    SHOW_SCORE
+};
+
+int game_state = STARTUP; // Which game_state/TEST game? 0 = running one, 1 = full on/off, 2 = tile toggle
 
 /*
    One time set-up and initialisation of the game.
@@ -32,16 +42,6 @@ void gameSetup() {
 	if (game_state == 0)
 		led_on_off(0, true);
 }
-
-typdef enum game_states
-{
-    STARTUP,
-    WAIT_INPUT,
-    P1_TARGET,
-    P1_TURN,
-	MISSED,
-    SHOW_SCORE
-};
 
 /*
    Globals for the game.
@@ -93,10 +93,12 @@ int game(int state, bool inputPending)
 				startup_output();
 			else if (game_state == WAIT_INPUT)
 				wait_input_output();
-            else if (game_state == P1_TARGET)
+      else if (game_state == P1_TARGET)
 				p1_target_output();
-            else if (game_state == P1_TURN)
+      else if (game_state == P1_TURN)
 				p1_turn_output();
+      else if (game_state == MISSED)
+        missed_output();
 			else if (game_state == SHOW_SCORE)
 				show_score_output();
 			if ( inputPending )
@@ -109,7 +111,7 @@ int game(int state, bool inputPending)
 
 				if (game_state == WAIT_INPUT)
 					wait_input_input(pressed);
-                else if (game_state == P1_TURN)
+        else if (game_state == P1_TURN)
 					p1_turn_input(pressed);
 			}
 			else

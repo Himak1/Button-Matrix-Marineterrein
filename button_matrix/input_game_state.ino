@@ -14,7 +14,7 @@ void    wait_input_input(int pressed)
 {
 	if (pressed == 11 || pressed == 12 || pressed == 19 || pressed == 20)
 	{
-		game_state = P1_TURN_OUTPUT;
+		game_state = P1_TARGET;
 		wipe_leds();
 	}
 }
@@ -23,12 +23,14 @@ void    p1_turn_input(int pressed)
 {
 	if (pressed == target)
 	{
+    Serial.println("yaay");
 		score++;
 		game_state = SHOW_SCORE;
 		wipe_leds();
 	}
-	else if (pressed != -1)
+	else
 	{
+    Serial.println("boooo");
 		game_state = MISSED;
 		wipe_leds();
 	}

@@ -35,7 +35,7 @@ void	wait_input_output()
 
 void	p1_target_output()
 {
-	if (duration < 5)
+	if (duration < 10)
 	{
 		led_on_off_range(4, 7);
 		led_on_off_range(12, 15);
@@ -45,7 +45,7 @@ void	p1_target_output()
 		return ;
 	}
 	target = random(0, 31);
-    game_state = P1_TURN;
+  game_state = P1_TURN;
 	duration = 0;
 	wipe_leds();
 }
@@ -57,6 +57,7 @@ void	p1_turn_output()
 
 void	missed_output()
 {
+  Serial.println("yeet");
 	if (duration % 2 == 0)
 	{
 		for (int i = 2; i < 30; i += 9)
@@ -84,7 +85,14 @@ void	missed_output()
 void	show_score_output()
 {
 	if (score == 4)
-		game_state == STARTUP;
+  {
+    score = 0;
+		game_state = STARTUP;
+  }
 	else
-		game_state == P1_TARGET;
+  {
+		game_state = P1_TARGET;
+  }
+  Serial.println("Score is");
+  Serial.println(score);
 }
